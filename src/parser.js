@@ -1,6 +1,8 @@
-const cheerio = require("cheerio");
+import * as cheerio from "cheerio";
+import url from "url";
 
 const getAllLinks = (html, baseUrl) => {
+    console.log("baseUrl", baseUrl);
     const $ = cheerio.load(html);
 
     const targetTerms = [
@@ -41,15 +43,18 @@ const getAllLinks = (html, baseUrl) => {
     ];
 
     const links = new Set();
+    const baseDomain = new URL(baseUrl).hostname;
 
     $("a").each((_, element) => {
         const href = $(element).attr("href");
         if (href) {
-            const fullUrl = url.resolve(baseURL, href);
-            const lowerHref = href.toLowerCase();
+            const fullUrl = url.resolve(baseUrl, href);
+            const linkDomain = new URL(fullUrl).hostname;
+
+            // Only add if link domain matches the base domain and link includes target terms
             if (
-                targetTerms.some((term) => lowerHref.includes(term)) &&
-                !links.has(fullUrl)
+                linkDomain === baseDomain &&
+                targetTerms.some((term) => fullUrl.toLowerCase().includes(term))
             ) {
                 links.add(fullUrl);
             }
@@ -59,6 +64,4 @@ const getAllLinks = (html, baseUrl) => {
     return Array.from(links).slice(0, 5); // Return up to 5 unique links
 };
 
-module.exports = {
-    getAllLinks,
-};
+export { getAllLinks };
