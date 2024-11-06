@@ -2,7 +2,6 @@ import * as cheerio from "cheerio";
 import url from "url";
 
 const getAllLinks = (html, baseUrl) => {
-    console.log("baseUrl", baseUrl);
     const $ = cheerio.load(html);
 
     const targetTerms = [
@@ -43,6 +42,9 @@ const getAllLinks = (html, baseUrl) => {
     ];
 
     const links = new Set();
+
+    links.add(baseUrl); // Add the base URL
+
     const baseDomain = new URL(baseUrl).hostname;
 
     $("a").each((_, element) => {
@@ -61,7 +63,7 @@ const getAllLinks = (html, baseUrl) => {
         }
     });
 
-    return Array.from(links).slice(0, 5); // Return up to 5 unique links
+    return Array.from(links).slice(0, 6); // Return up to 6 unique links
 };
 
 export { getAllLinks };

@@ -13,7 +13,5 @@ router.addDefaultHandler(async ({ page, request, log }) => {
 
     log.info(`HTML extracted and saved for ${request.url}`);
 
-    console.log(links);
-
     // console.log(htmlContent);
 });
