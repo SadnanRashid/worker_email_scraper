@@ -75,25 +75,59 @@ const getAllLinks = (html, baseUrl) => {
 
 const extractDataFromHtml = (html) => {
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    // Regexes for capturing social media links
+    const socialMediaRegexes = {
+        linkedin:
+            /https?:\/\/(www\.)?linkedin\.com\/(company|in|groups)\/[a-zA-Z0-9_-]+/gi,
+        facebook: /https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9_.-]+/gi,
+        twitter: /https?:\/\/(www\.)?twitter\.com\/[a-zA-Z0-9_]+/gi,
+        tiktok: /https?:\/\/(www\.)?tiktok\.com\/@[a-zA-Z0-9._-]+/gi,
+        pinterest: /https?:\/\/(www\.)?pinterest\.com\/[a-zA-Z0-9_/]+/gi,
+        instagram: /https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9_.-]+/gi,
+    };
+    const extractedData = {
+        emails: [],
+        linkedin: [],
+        facebook: [],
+        twitter: [],
+        tiktok: [],
+        pinterest: [],
+        instagram: [],
+    };
     const emails = html.match(emailRegex);
 
-    if (!emails) return [];
-
     // Filter, sanitize, and validate emails and ofcourse remove file extensions
-    const filteredEmails = emails
-        .map((email) => email.replace(/^mailto:/i, "")) // Remove "mailto:" if it exists
-        .filter((email) => {
-            // Exclude emails with unwanted file extensions
-            const isValidDomain =
-                !/\.(png|jpg|jpeg|gif|bmp|svg|webp|pdf|doc|docx|xls|xlsx)$/i.test(
-                    email
-                );
-            const isValidFormat =
-                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
-            return isValidDomain && isValidFormat;
-        });
+    if (emails) {
+        const filteredEmails = emails
+            .map((email) => email.replace(/^mailto:/i, "")) // Remove "mailto:" if it exists
+            .filter((email) => {
+                // Exclude emails with unwanted file extensions
+                const isValidDomain =
+                    !/\.(png|jpg|jpeg|gif|bmp|svg|webp|pdf|doc|docx|xls|xlsx)$/i.test(
+                        email
+                    );
+                const isValidFormat =
+                    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
+                        email
+                    );
 
-    return [...new Set(filteredEmails)]; // Return unique emails
+                const isValidMailDomain =
+                    email.split("@")[1].split(".").length === 2;
+                return isValidDomain && isValidFormat && isValidMailDomain;
+            });
+
+        extractedData.emails = [...new Set(filteredEmails)]; // Add unique emails
+    }
+    // return [...new Set(filteredEmails)]; // Return unique emails
+
+    for (const [platform, regex] of Object.entries(socialMediaRegexes)) {
+        const match = html.match(regex);
+        if (match) {
+            extractedData[platform] = [...new Set(match)];
+        }
+    }
+
+    return extractedData;
 };
 
 export { getAllLinks, extractDataFromHtml };

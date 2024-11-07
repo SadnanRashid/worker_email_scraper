@@ -5,7 +5,6 @@ export const router = (userUrl) => {
     const puppeteerRouter = createPuppeteerRouter();
 
     puppeteerRouter.addDefaultHandler(async ({ page, request, log }) => {
-        const arrayOfData = [];
         let emailsTemp = [];
         log.info(`Processing base URL: ${userUrl}`);
 
@@ -26,7 +25,7 @@ export const router = (userUrl) => {
             // Extract emails from the linked page
             const linkedHtmlContent = await page.content();
             // console.log("linkedHtmlContent: ", linkedHtmlContent);
-            const emails = extractDataFromHtml(linkedHtmlContent);
+            const data = extractDataFromHtml(linkedHtmlContent);
 
             // store emails in emailsTemp
             if (emails.length > 0) {
