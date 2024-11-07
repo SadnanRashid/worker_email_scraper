@@ -90,4 +90,4 @@ const extractDataFromHtml = (html) => {
     return [...new Set(filteredEmails)]; // Return unique emails
 };
 
-export { getAllLinks };
+export { getAllLinks, extractDataFromHtml };
