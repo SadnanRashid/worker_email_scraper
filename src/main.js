@@ -7,8 +7,6 @@ await Actor.init();
 const input = await Actor.getInput();
 const userUrls = input?.startUrls || [];
 
-console.log(userUrls);
-
 for (const userUrl of userUrls) {
     // For each user URL, create and run a separate crawler instance
     const crawler = new PuppeteerCrawler({
