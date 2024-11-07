@@ -15,18 +15,22 @@ export const router = (userUrl) => {
             instagram: [],
         };
 
-        log.info(`Processing base URL: ${userUrl}`);
+        log.info(`Processing base URL: ${request.url}`);
 
         // Get HTML content of the main page
         const htmlContent = await page.content();
 
         // Get all relevant links from this page
         const links = getAllLinks(htmlContent, request.url);
-        console.log("links: ", links);
 
+        let temp = 0; //for counting progess
         // Scrape and process each link sequentially
         for (const link of links) {
-            log.info(`Scraping link: ${link}`);
+            const progress = Math.round(((temp + 1) / links.length) * 100);
+            log.info(
+                `Scraping website: ${request.url} (${progress}% complete)`
+            );
+            temp++;
 
             // Navigate to the link
             await page.goto(link);
@@ -44,7 +48,7 @@ export const router = (userUrl) => {
                 }
             }
 
-            log.info(`Data from ${link}: ${JSON.stringify(data)}`);
+            // log.info(`Data from ${link}: ${JSON.stringify(data)}`);
         }
 
         // Prepare final data object for dataset push
@@ -53,9 +57,18 @@ export const router = (userUrl) => {
             ...allDataTemp,
         };
 
-        await Dataset.pushData(dataObj);
+        const foundData = Object.keys(allDataTemp)
+            .filter((key) => allDataTemp[key] && allDataTemp[key].length > 0)
+            .map((key) => key); // Collect keys with data
+        if (foundData.length > 0) {
+            log.info(
+                `Scraped link: ${request.url} | Found: ${foundData.join(", ")}`
+            );
+        }
 
-        console.log("Data pushed to dataset: ", dataObj);
+        console.log(dataObj);
+
+        // await Dataset.pushData(dataObj);
     });
 
     return puppeteerRouter;

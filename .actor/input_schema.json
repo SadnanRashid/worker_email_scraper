@@ -6,12 +6,11 @@
         "startUrls": {
             "title": "Start URLs",
             "type": "array",
-            "description": "URLs to start with.",
+            "description": "Enter each URL on a new line.",
             "editor": "requestListSources",
             "prefill": [
-                {
-                    "url": "https://www.apify.com"
-                }
+                { "url": "https://www.apify.com" },
+                { "url": "https://www.example.com" }
             ]
         }
     }
