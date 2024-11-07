@@ -1,21 +1,47 @@
 import { createPuppeteerRouter } from "crawlee";
 import { getAllLinks, extractDataFromHtml } from "./parser.js";
 
-export const router = createPuppeteerRouter();
+export const router = (userUrl) => {
+    const puppeteerRouter = createPuppeteerRouter();
 
-router.addDefaultHandler(async ({ page, request, log }) => {
-    const arrayOfData = [];
-    log.info(`Extracting HTML content for ${request.url}`);
+    puppeteerRouter.addDefaultHandler(async ({ page, request, log }) => {
+        const arrayOfData = [];
+        let emailsTemp = [];
+        log.info(`Processing base URL: ${userUrl}`);
 
-    // Extract the HTML content of the page
-    const htmlContent = await page.content();
+        // Get HTML content of the main page
+        const htmlContent = await page.content();
 
-    // Get all possible links that might contain the data (email/socials)
-    const links = getAllLinks(htmlContent, request.url);
+        // Get all relevant links from this page
+        const links = getAllLinks(htmlContent, request.url);
+        console.log("links: ", links);
 
-    // Here I want to scrape all links (links array) and use extractDataFromHtml to get the emails
+        // Scrape and process each link sequentially
+        for (const link of links) {
+            log.info(`Scraping link: ${link}`);
 
-    log.info(`HTML extracted and saved for ${request.url}`);
+            // Navigate to the link
+            await page.goto(link);
 
-    // console.log(htmlContent);
-});
+            // Extract emails from the linked page
+            const linkedHtmlContent = await page.content();
+            console.log("linkedHtmlContent: ", linkedHtmlContent);
+            const emails = extractDataFromHtml(linkedHtmlContent);
+
+            // store emails in emailsTemp
+            emailsTemp.push(emails);
+
+            log.info(`Emails from ${link}: ${emails.join(", ") || "None"}`);
+        }
+
+        // store emails in arrayOfData
+        arrayOfData.push({
+            url: userUrl,
+            emails: emailsTemp,
+        });
+
+        console.log("arrayOfData: ", arrayOfData);
+    });
+
+    return puppeteerRouter;
+};

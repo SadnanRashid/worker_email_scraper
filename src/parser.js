@@ -67,8 +67,7 @@ const getAllLinks = (html, baseUrl) => {
 };
 
 const extractDataFromHtml = (html) => {
-    const emailRegex =
-        /mailto:?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
     const emails = html.match(emailRegex);
 
     if (!emails) return [];
