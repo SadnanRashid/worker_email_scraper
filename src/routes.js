@@ -5,7 +5,16 @@ export const router = (userUrl) => {
     const puppeteerRouter = createPuppeteerRouter();
 
     puppeteerRouter.addDefaultHandler(async ({ page, request, log }) => {
-        let emailsTemp = [];
+        let allDataTemp = {
+            emails: [],
+            linkedin: [],
+            facebook: [],
+            twitter: [],
+            tiktok: [],
+            pinterest: [],
+            instagram: [],
+        };
+
         log.info(`Processing base URL: ${userUrl}`);
 
         // Get HTML content of the main page
@@ -22,30 +31,31 @@ export const router = (userUrl) => {
             // Navigate to the link
             await page.goto(link);
 
-            // Extract emails from the linked page
+            // Extract data (emails and social media links) from the linked page
             const linkedHtmlContent = await page.content();
-            // console.log("linkedHtmlContent: ", linkedHtmlContent);
             const data = extractDataFromHtml(linkedHtmlContent);
 
-            // store emails in emailsTemp
-            if (emails.length > 0) {
-                emailsTemp.push(emails.join(","));
+            // Add data to allDataTemp, ensuring uniqueness
+            for (const key in allDataTemp) {
+                if (data[key] && data[key].length > 0) {
+                    allDataTemp[key] = [
+                        ...new Set([...allDataTemp[key], ...data[key]]),
+                    ];
+                }
             }
 
-            log.info(`Emails from ${link}: ${emails.join(", ") || "None"}`);
+            log.info(`Data from ${link}: ${JSON.stringify(data)}`);
         }
 
-        // store emails
+        // Prepare final data object for dataset push
         const dataObj = {
             url: userUrl?.url,
-            emails: emailsTemp,
+            ...allDataTemp,
         };
 
         await Dataset.pushData(dataObj);
 
-        // arrayOfData.push(dataObj);
-
-        console.log("data: ", dataObj);
+        console.log("Data pushed to dataset: ", dataObj);
     });
 
     return puppeteerRouter;
