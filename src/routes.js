@@ -1,4 +1,4 @@
-import { createPuppeteerRouter } from "crawlee";
+import { Dataset, createPuppeteerRouter } from "crawlee";
 import { getAllLinks, extractDataFromHtml } from "./parser.js";
 
 export const router = (userUrl) => {
@@ -25,22 +25,28 @@ export const router = (userUrl) => {
 
             // Extract emails from the linked page
             const linkedHtmlContent = await page.content();
-            console.log("linkedHtmlContent: ", linkedHtmlContent);
+            // console.log("linkedHtmlContent: ", linkedHtmlContent);
             const emails = extractDataFromHtml(linkedHtmlContent);
 
             // store emails in emailsTemp
-            emailsTemp.push(emails);
+            if (emails.length > 0) {
+                emailsTemp.push(emails.join(","));
+            }
 
             log.info(`Emails from ${link}: ${emails.join(", ") || "None"}`);
         }
 
-        // store emails in arrayOfData
-        arrayOfData.push({
-            url: userUrl,
+        // store emails
+        const dataObj = {
+            url: userUrl?.url,
             emails: emailsTemp,
-        });
+        };
 
-        console.log("arrayOfData: ", arrayOfData);
+        await Dataset.pushData(dataObj);
+
+        // arrayOfData.push(dataObj);
+
+        console.log("data: ", dataObj);
     });
 
     return puppeteerRouter;

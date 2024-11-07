@@ -42,7 +42,6 @@ const getAllLinks = (html, baseUrl) => {
     ];
 
     const links = new Set();
-
     links.add(baseUrl); // Add the base URL
 
     const baseDomain = new URL(baseUrl).hostname;
@@ -50,15 +49,23 @@ const getAllLinks = (html, baseUrl) => {
     $("a").each((_, element) => {
         const href = $(element).attr("href");
         if (href) {
-            const fullUrl = url.resolve(baseUrl, href);
+            const fullUrl = new URL(href, baseUrl).toString(); // Resolve full URL
             const linkDomain = new URL(fullUrl).hostname;
 
-            // Only add if link domain matches the base domain and link includes target terms
+            // Check if the link matches the base domain and contains target terms
             if (
                 linkDomain === baseDomain &&
                 targetTerms.some((term) => fullUrl.toLowerCase().includes(term))
             ) {
-                links.add(fullUrl);
+                // Extract the pathname of the URL and split by '/'
+                const pathSegments = new URL(fullUrl).pathname
+                    .split("/")
+                    .filter(Boolean);
+
+                // Only add if there is a single segment in the path (e.g., "domain/about", "domain/contact")
+                if (pathSegments.length <= 1) {
+                    links.add(fullUrl);
+                }
             }
         }
     });
