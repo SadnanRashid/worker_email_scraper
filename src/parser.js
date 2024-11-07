@@ -66,4 +66,28 @@ const getAllLinks = (html, baseUrl) => {
     return Array.from(links).slice(0, 6); // Return up to 6 unique links
 };
 
+const extractDataFromHtml = (html) => {
+    const emailRegex =
+        /mailto:?[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+    const emails = html.match(emailRegex);
+
+    if (!emails) return [];
+
+    // Filter, sanitize, and validate emails and ofcourse remove file extensions
+    const filteredEmails = emails
+        .map((email) => email.replace(/^mailto:/i, "")) // Remove "mailto:" if it exists
+        .filter((email) => {
+            // Exclude emails with unwanted file extensions
+            const isValidDomain =
+                !/\.(png|jpg|jpeg|gif|bmp|svg|webp|pdf|doc|docx|xls|xlsx)$/i.test(
+                    email
+                );
+            const isValidFormat =
+                /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+            return isValidDomain && isValidFormat;
+        });
+
+    return [...new Set(filteredEmails)]; // Return unique emails
+};
+
 export { getAllLinks };

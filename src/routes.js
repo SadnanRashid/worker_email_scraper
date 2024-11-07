@@ -9,6 +9,7 @@ router.addDefaultHandler(async ({ page, request, log }) => {
     // Extract the HTML content of the page
     const htmlContent = await page.content();
 
+    // Get all possible links that might contain the data (email/socials)
     const links = getAllLinks(htmlContent, request.url);
 
     log.info(`HTML extracted and saved for ${request.url}`);
