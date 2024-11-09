@@ -8,8 +8,6 @@ const input = await Actor.getInput();
 const userUrls = input?.startUrls || [];
 
 const totalUrls = userUrls.length;
-let completedCount = 0;
-let failedCount = 0;
 
 const requestQueue = await RequestQueue.open();
 
@@ -17,36 +15,28 @@ const requestQueue = await RequestQueue.open();
 for (const userUrl of userUrls) {
     await requestQueue.addRequest({
         url: userUrl.url,
-        userData: { originalUrl: userUrl.url },
     });
 }
 
 const crawler = new PuppeteerCrawler({
     requestQueue,
-    maxConcurrency: 5,
+    maxConcurrency: 3,
     maxRequestRetries: 2,
     requestHandler: router(),
 
-    // On success, increment completed count and update status message
-    handlePageFunction: async ({ request }) => {
-        completedCount++;
-        await Actor.setStatusMessage(
-            `Crawled ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
-        );
-    },
-
     // On error, increment failed count and update status message
-    handleFailedRequestFunction: async ({ request }) => {
-        failedCount++;
-        await Actor.setStatusMessage(
-            `Crawled ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
-        );
-    },
+    // failedRequestHandler: async ({ request }) => {
+    //     failedCount++;
+    //     await Actor.setStatusMessage(
+    //         `Crawled ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
+    //     );
+    // },
 });
 
 // Run the crawler
 await crawler.run();
 
-await Actor.exit(
-    `Crawling completed: ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
-);
+await Actor.exit("Completed the scraping process!");
+
+// export totalUrls
+export { totalUrls };

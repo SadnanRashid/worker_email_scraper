@@ -1,5 +1,9 @@
 import { Dataset, createPuppeteerRouter } from "crawlee";
 import { getAllLinks, extractDataFromHtml } from "./parser.js";
+import { Actor } from "apify";
+import { totalUrls } from "./main.js";
+
+let completedCount = 0;
 
 export const router = () => {
     const puppeteerRouter = createPuppeteerRouter();
@@ -81,9 +85,14 @@ export const router = () => {
             instagram: dataObj.instagram[0] || null,
         };
 
-        console.log(result);
-
         await Dataset.pushData(result);
+
+        // statusmessage
+        completedCount++;
+
+        await Actor.setStatusMessage(
+            `Crawled ${completedCount}/${totalUrls} Websites`
+        );
     });
 
     return puppeteerRouter;
