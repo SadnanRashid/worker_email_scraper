@@ -62,11 +62,22 @@ export const router = (userUrl) => {
             .map((key) => key); // Collect keys with data
         if (foundData.length > 0) {
             log.info(
-                `Scraped link: ${request.url} | Found: ${foundData.join(", ")}`
+                `Scraped website: ${request.url} | Found: ${foundData.join(
+                    ", "
+                )}`
             );
         }
 
-        console.log(dataObj);
+        console.log({
+            url: dataObj.url,
+            emails: dataObj.emails,
+            linkedin: dataObj.linkedin[0] || null,
+            facebook: dataObj.facebook[0] || null,
+            twitter: dataObj.twitter[0] || null,
+            tiktok: dataObj.tiktok[0] || null,
+            pinterest: dataObj.pinterest[0] || null,
+            instagram: dataObj.instagram[0] || null,
+        });
 
         // await Dataset.pushData(dataObj);
     });
