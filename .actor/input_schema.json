@@ -1,12 +1,12 @@
 {
-    "title": "PuppeteerCrawler Template",
+    "title": "Advanced Email, Phone and Social Media Scraper",
     "type": "object",
     "schemaVersion": 1,
     "properties": {
         "startUrls": {
             "title": "Start URLs",
             "type": "array",
-            "description": "Enter each URL on a new line.",
+            "description": "Enter each URL on a new line OR use Bulk Edit option to paste a list of URLs.",
             "editor": "requestListSources",
             "prefill": [
                 { "url": "https://www.apify.com" },

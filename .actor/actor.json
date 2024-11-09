@@ -1,12 +1,115 @@
 {
     "actorSpecification": 1,
-    "name": "Advanced Email, Phone and Social Media Scraper",
-    "title": "Comprehensive Scraper for Emails, Phone Numbers, and Social Media Links",
-    "description": "This advanced contact scraper is an ALL-IN-ONE scraper that navigates pages likely to contain contact data, extracting emails, phone numbers, and social media links, with precision and speed. This scraper can bypass cloudflare and captchas. Very good scraper for lead generation.",
-    "version": "1.0",
+    "name": "actor",
+    "title": "Project Puppeteer Crawler JavaScript",
+    "description": "Crawlee and Puppeteer project in JavaScript.",
+    "version": "0.0",
     "meta": {
         "templateId": "js-crawlee-puppeteer-chrome"
     },
     "input": "./input_schema.json",
-    "dockerfile": "./Dockerfile"
+    "dockerfile": "./Dockerfile",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "fields": {
+                "url": {
+                    "type": "string",
+                    "description": "The URL of the scraped page."
+                },
+                "emails": {
+                    "type": "array",
+                    "description": "List of emails found on the page."
+                },
+                "phone": {
+                    "type": "array",
+                    "description": "List of phone numbers found on the page."
+                },
+                "linkedin": {
+                    "type": "string",
+                    "description": "LinkedIn profile URL."
+                },
+                "facebook": {
+                    "type": "string",
+                    "description": "Facebook profile URL."
+                },
+                "twitter": {
+                    "type": "string",
+                    "description": "Twitter profile URL."
+                },
+                "tiktok": {
+                    "type": "string",
+                    "description": "TikTok profile URL."
+                },
+                "pinterest": {
+                    "type": "string",
+                    "description": "Pinterest profile URL."
+                },
+                "instagram": {
+                    "type": "string",
+                    "description": "Instagram profile URL."
+                }
+            },
+            "views": {
+                "overview": {
+                    "title": "Overview",
+                    "description": "Displays the scraped contact information and social media links.",
+                    "transformation": {
+                        "fields": [
+                            "url",
+                            "emails",
+                            "phone",
+                            "linkedin",
+                            "facebook",
+                            "twitter",
+                            "tiktok",
+                            "pinterest",
+                            "instagram"
+                        ]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "url": {
+                                "label": "Website URL",
+                                "format": "link"
+                            },
+                            "emails": {
+                                "label": "Emails",
+                                "format": "array"
+                            },
+                            "phone": {
+                                "label": "Phone Numbers",
+                                "format": "array"
+                            },
+                            "linkedin": {
+                                "label": "LinkedIn",
+                                "format": "link"
+                            },
+                            "facebook": {
+                                "label": "Facebook",
+                                "format": "link"
+                            },
+                            "twitter": {
+                                "label": "Twitter",
+                                "format": "link"
+                            },
+                            "tiktok": {
+                                "label": "TikTok",
+                                "format": "link"
+                            },
+                            "pinterest": {
+                                "label": "Pinterest",
+                                "format": "link"
+                            },
+                            "instagram": {
+                                "label": "Instagram",
+                                "format": "link"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

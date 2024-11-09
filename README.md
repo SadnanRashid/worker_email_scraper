@@ -1,8 +1,8 @@
-# Apify Contact & Social Scraper Worker
+# Advanced Email, Phone and Social Media Scraper
 
 ### Overview
 
-The **Apify Contact & Social Scraper Worker** is an advanced tool for gathering contact and social media information from websites. With a unique, human-emulating approach, it effectively bypasses common security blocks, including CAPTCHA and Cloudflare, enabling reliable, efficient data extraction. Simply provide a single URL or list of URLs, and this scraper will dive deep into each site, navigating to areas most likely to contain contact details while skipping irrelevant pages to conserve resources.
+The **Advanced Email, Phone and Social Media Scraper** is an advanced tool for gathering contact and social media information from websites. With a unique, human-emulating approach, it effectively bypasses common security blocks, including CAPTCHA and Cloudflare, enabling reliable, efficient data extraction. Simply provide a single URL or list of URLs, and this scraper will dive deep into each site, navigating to areas most likely to contain contact details while skipping irrelevant pages to conserve resources.
 
 ---
 
@@ -55,7 +55,7 @@ For each website, the worker generates:
 
 ### Example Usage
 
-1. Open the Apify console, select the **Contact & Social Scraper Worker**.
+1. Open the Apify console, select the **Advanced Email, Phone and Social Media Scraper**.
 2. Input one or multiple URLs.
 3. Start the worker. It will navigate and selectively scrape, focusing on the pages where contact details are most likely to be located, saving results in Apify’s dataset.
 
