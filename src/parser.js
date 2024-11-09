@@ -1,44 +1,9 @@
 import * as cheerio from "cheerio";
+// import targetTerms from "./terms.json" file
+import { targetTerms } from "./terms.js";
 
 const getAllLinks = (html, baseUrl) => {
     const $ = cheerio.load(html);
-
-    const targetTerms = [
-        // English
-        "about",
-        "contact",
-        "support",
-        "help",
-        "team",
-        "careers",
-        // Spanish
-        "acerca",
-        "contacto",
-        "soporte",
-        "cliente",
-        "ayuda",
-        "equipo",
-        "carreras",
-        "empleo",
-        // French
-        "propos",
-        "contact",
-        "support",
-        "client",
-        "aide",
-        "équipe",
-        "carrières",
-        "emplois",
-        // Chinese (Simplified)
-        "关于",
-        "联系",
-        "支持",
-        "客户",
-        "帮助",
-        "团队",
-        "招聘",
-        "问题",
-    ];
 
     const links = new Set();
     links.add(baseUrl); // Add the base URL
@@ -74,10 +39,6 @@ const getAllLinks = (html, baseUrl) => {
 
 const extractDataFromHtml = (html) => {
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-
-    // Regex for capturing phone numbers with optional country code, spaces, hyphens, dots, and brackets
-    const phoneRegex =
-        /(\(?\+\d{1,3}\)?\s?)?\(?\d{2,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{2,4}\b/g;
 
     // Regexes for capturing social media links
     const socialMediaRegexes = {
@@ -123,13 +84,9 @@ const extractDataFromHtml = (html) => {
         extractedData.emails = [...new Set(filteredEmails)];
     }
 
-    // Extract phone numbers
-    const phoneNumbers = html.match(phoneRegex);
-    console.log("Phone: ", phoneNumbers);
-    if (phoneNumbers) {
-        const filteredPhoneNumbers = phoneNumbers.map((phone) => phone.trim());
-        extractedData.phoneNumbers = [...new Set(filteredPhoneNumbers)];
-    }
+    // extract phone number from extractPhoneNumber
+    extractedData.phoneNumbers = extractPhoneNumber(html);
+    console.log("Phone: ", extractedData.phoneNumbers);
 
     // Extract social media links
     for (const [platform, regex] of Object.entries(socialMediaRegexes)) {
@@ -139,9 +96,27 @@ const extractDataFromHtml = (html) => {
         }
     }
 
-    console.log("Phone::", extractedData.phoneNumbers);
-
     return extractedData;
 };
+
+function extractPhoneNumber(htmlString) {
+    // Remove HTML tags
+    const cleanData = htmlString.replace(/<[^>]*>/g, "");
+
+    // Regex for phone numbers that start with '+' or '(+' and are between 10-15 characters long
+    const regex = /(\+|\(\+)[\d\s\(\)-]{10,13}[\d]/g;
+
+    // Match all phone numbers
+    const matches = cleanData.match(regex);
+
+    // If no matches, return null
+    if (!matches) return null;
+
+    // Normalize all numbers to start with '+' and remove unnecessary characters
+    const results = matches.map((number) => {
+        return number.replace(/[^0-9]/g, "").replace(/^/, "+");
+    });
+    return results;
+}
 
 export { getAllLinks, extractDataFromHtml };

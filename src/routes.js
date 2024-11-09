@@ -13,6 +13,7 @@ export const router = (userUrl) => {
             tiktok: [],
             pinterest: [],
             instagram: [],
+            phoneNumbers: [],
         };
 
         log.info(`Processing base URL: ${request.url}`);
@@ -22,6 +23,7 @@ export const router = (userUrl) => {
 
         // Get all relevant links from this page
         const links = getAllLinks(htmlContent, request.url);
+        console.log(links);
 
         let temp = 0; //for counting progess
         // Scrape and process each link sequentially
@@ -67,21 +69,20 @@ export const router = (userUrl) => {
                 )}`
             );
         }
-        console.log(dataObj);
 
-        // console.log({
-        //     url: dataObj.url,
-        //     emails: dataObj.emails,
-        //     phone: dataObj.phoneNumbers,
-        //     linkedin: dataObj.linkedin[0] || null,
-        //     facebook: dataObj.facebook[0] || null,
-        //     twitter: dataObj.twitter[0] || null,
-        //     tiktok: dataObj.tiktok[0] || null,
-        //     pinterest: dataObj.pinterest[0] || null,
-        //     instagram: dataObj.instagram[0] || null,
-        // });
+        const result = {
+            url: dataObj.url,
+            emails: dataObj.emails,
+            phone: dataObj.phoneNumbers,
+            linkedin: dataObj.linkedin[0] || null,
+            facebook: dataObj.facebook[0] || null,
+            twitter: dataObj.twitter[0] || null,
+            tiktok: dataObj.tiktok[0] || null,
+            pinterest: dataObj.pinterest[0] || null,
+            instagram: dataObj.instagram[0] || null,
+        };
 
-        // await Dataset.pushData(dataObj);
+        await Dataset.pushData(result);
     });
 
     return puppeteerRouter;
