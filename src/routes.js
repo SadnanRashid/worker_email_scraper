@@ -23,7 +23,6 @@ export const router = (userUrl) => {
 
         // Get all relevant links from this page
         const links = getAllLinks(htmlContent, request.url);
-        console.log(links);
 
         let temp = 0; //for counting progess
         // Scrape and process each link sequentially
@@ -81,6 +80,8 @@ export const router = (userUrl) => {
             pinterest: dataObj.pinterest[0] || null,
             instagram: dataObj.instagram[0] || null,
         };
+
+        console.log(result);
 
         await Dataset.pushData(result);
     });

@@ -34,6 +34,31 @@ const getAllLinks = (html, baseUrl) => {
         }
     });
 
+    if (links.size < 6) {
+        $("a").each((_, element) => {
+            if (links.size < 6) {
+                const href = $(element).attr("href");
+                if (href) {
+                    const fullUrl = new URL(href, baseUrl).toString(); // Resolve full URL
+                    const linkDomain = new URL(fullUrl).hostname;
+
+                    // Check if the link matches the base domain and contains target terms
+                    if (linkDomain === baseDomain) {
+                        // Extract the pathname of the URL and split by '/'
+                        const pathSegments = new URL(fullUrl).pathname
+                            .split("/")
+                            .filter(Boolean);
+
+                        // Only add if there is a single segment in the path (e.g., "domain/about", "domain/contact")
+                        if (pathSegments.length <= 1) {
+                            links.add(fullUrl);
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     return Array.from(links).slice(0, 6); // Return up to 6 unique links
 };
 
@@ -86,7 +111,6 @@ const extractDataFromHtml = (html) => {
 
     // extract phone number from extractPhoneNumber
     extractedData.phoneNumbers = extractPhoneNumber(html);
-    console.log("Phone: ", extractedData.phoneNumbers);
 
     // Extract social media links
     for (const [platform, regex] of Object.entries(socialMediaRegexes)) {
