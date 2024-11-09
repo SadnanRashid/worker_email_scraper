@@ -74,6 +74,11 @@ const getAllLinks = (html, baseUrl) => {
 
 const extractDataFromHtml = (html) => {
     const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+    // Regex for capturing phone numbers with optional country code, spaces, hyphens, dots, and brackets
+    const phoneRegex =
+        /(\(?\+\d{1,3}\)?\s?)?\(?\d{2,4}\)?[\s.-]?\d{2,4}[\s.-]?\d{2,4}[\s.-]?\d{2,4}\b/g;
+
     // Regexes for capturing social media links
     const socialMediaRegexes = {
         linkedin:
@@ -84,8 +89,10 @@ const extractDataFromHtml = (html) => {
         pinterest: /https?:\/\/(www\.)?pinterest\.com\/[a-zA-Z0-9_/]+/gi,
         instagram: /https?:\/\/(www\.)?instagram\.com\/[a-zA-Z0-9_.-]+/gi,
     };
+
     const extractedData = {
         emails: [],
+        phoneNumbers: [],
         linkedin: [],
         facebook: [],
         twitter: [],
@@ -93,14 +100,13 @@ const extractDataFromHtml = (html) => {
         pinterest: [],
         instagram: [],
     };
-    const emails = html.match(emailRegex);
 
-    // Filter, sanitize, and validate emails and ofcourse remove file extensions
+    // Extract emails
+    const emails = html.match(emailRegex);
     if (emails) {
         const filteredEmails = emails
-            .map((email) => email.replace(/^mailto:/i, "")) // Remove "mailto:" if it exists
+            .map((email) => email.replace(/^mailto:/i, ""))
             .filter((email) => {
-                // Exclude emails with unwanted file extensions
                 const isValidDomain =
                     !/\.(png|jpg|jpeg|gif|bmp|svg|webp|pdf|doc|docx|xls|xlsx)$/i.test(
                         email
@@ -109,22 +115,31 @@ const extractDataFromHtml = (html) => {
                     /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(
                         email
                     );
-
                 const isValidMailDomain =
                     email.split("@")[1].split(".").length === 2;
                 return isValidDomain && isValidFormat && isValidMailDomain;
             });
 
-        extractedData.emails = [...new Set(filteredEmails)]; // Add unique emails
+        extractedData.emails = [...new Set(filteredEmails)];
     }
-    // return [...new Set(filteredEmails)]; // Return unique emails
 
+    // Extract phone numbers
+    const phoneNumbers = html.match(phoneRegex);
+    console.log("Phone: ", phoneNumbers);
+    if (phoneNumbers) {
+        const filteredPhoneNumbers = phoneNumbers.map((phone) => phone.trim());
+        extractedData.phoneNumbers = [...new Set(filteredPhoneNumbers)];
+    }
+
+    // Extract social media links
     for (const [platform, regex] of Object.entries(socialMediaRegexes)) {
         const match = html.match(regex);
         if (match) {
             extractedData[platform] = [...new Set(match)];
         }
     }
+
+    console.log("Phone::", extractedData.phoneNumbers);
 
     return extractedData;
 };
