@@ -1,5 +1,5 @@
 import { Actor } from "apify";
-import { PuppeteerCrawler } from "crawlee";
+import { PuppeteerCrawler, RequestQueue } from "crawlee";
 import { router } from "./routes.js";
 
 await Actor.init();
@@ -7,14 +7,46 @@ await Actor.init();
 const input = await Actor.getInput();
 const userUrls = input?.startUrls || [];
 
-for (const userUrl of userUrls) {
-    // For each user URL, create and run a separate crawler instance
-    const crawler = new PuppeteerCrawler({
-        requestHandler: router(userUrl), // Pass the current URL to router for separate handling
-    });
+const totalUrls = userUrls.length;
+let completedCount = 0;
+let failedCount = 0;
 
-    // Use an array of simple URL strings instead of nested objects
-    await crawler.run([{ url: userUrl.url }]); // Corrected: flatten userUrl
+const requestQueue = await RequestQueue.open();
+
+// Add each user URL to the queue with userData to pass the original URL
+for (const userUrl of userUrls) {
+    await requestQueue.addRequest({
+        url: userUrl.url,
+        userData: { originalUrl: userUrl.url },
+    });
 }
 
-await Actor.exit();
+const crawler = new PuppeteerCrawler({
+    requestQueue,
+    maxConcurrency: 5,
+    maxRequestRetries: 2,
+    requestHandler: router(),
+
+    // On success, increment completed count and update status message
+    handlePageFunction: async ({ request }) => {
+        completedCount++;
+        await Actor.setStatusMessage(
+            `Crawled ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
+        );
+    },
+
+    // On error, increment failed count and update status message
+    handleFailedRequestFunction: async ({ request }) => {
+        failedCount++;
+        await Actor.setStatusMessage(
+            `Crawled ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
+        );
+    },
+});
+
+// Run the crawler
+await crawler.run();
+
+await Actor.exit(
+    `Crawling completed: ${completedCount}/${totalUrls} Websites, ${failedCount} Failed Requests`
+);

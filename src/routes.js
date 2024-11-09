@@ -1,7 +1,7 @@
 import { Dataset, createPuppeteerRouter } from "crawlee";
 import { getAllLinks, extractDataFromHtml } from "./parser.js";
 
-export const router = (userUrl) => {
+export const router = () => {
     const puppeteerRouter = createPuppeteerRouter();
 
     puppeteerRouter.addDefaultHandler(async ({ page, request, log }) => {
@@ -54,7 +54,7 @@ export const router = (userUrl) => {
 
         // Prepare final data object for dataset push
         const dataObj = {
-            url: userUrl?.url,
+            url: request?.url,
             ...allDataTemp,
         };
 
