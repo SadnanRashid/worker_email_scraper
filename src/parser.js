@@ -1,5 +1,4 @@
 import * as cheerio from "cheerio";
-import url from "url";
 
 const getAllLinks = (html, baseUrl) => {
     const $ = cheerio.load(html);

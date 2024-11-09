@@ -33,7 +33,7 @@ export const router = (userUrl) => {
             temp++;
 
             // Navigate to the link
-            await page.goto(link);
+            await page.goto(link, { timeout: 30000 });
 
             // Extract data (emails and social media links) from the linked page
             const linkedHtmlContent = await page.content();
